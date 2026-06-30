@@ -6,12 +6,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="サブスク">
-<meta name="theme-color" content="#4338CA">
+<meta name="theme-color" content="#9B95C9">
 <title>サブスク管理</title>
 <style>
   :root{
-    --indigo:#4338CA; --indigo-light:#6366F1; --indigo-soft:#EEF0FB;
-    --bg:#F3F4F6; --card:#FFFFFF; --ink:#1F2937; --muted:#9CA3AF; --line:#E5E7EB;
+    --brand:#9B95C9; --brand-deep:#7E78B5; --brand-soft:#EDEBF6;
+    --bg:#F4F3F8; --card:#FFFFFF; --ink:#1F2937; --muted:#9CA3AF; --line:#E7E6EF;
     --safe-top:env(safe-area-inset-top); --safe-bottom:env(safe-area-inset-bottom);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -21,9 +21,8 @@
     background:var(--bg); color:var(--ink); overscroll-behavior-y:none;
   }
   button{font-family:inherit; cursor:pointer; border:none; background:none;}
-  input,select{font-family:inherit; font-size:17px;}
+  input,select,textarea{font-family:inherit; font-size:17px;}
 
-  /* ---- shell ---- */
   #app{display:flex; flex-direction:column; height:100dvh;}
   header{
     padding:calc(var(--safe-top) + 14px) 20px 14px; background:#fff;
@@ -36,16 +35,16 @@
   .page{display:none; padding:18px 16px;}
   .page.active{display:block;}
 
-  /* ---- home ---- */
   .summary{
-    background:linear-gradient(135deg,var(--indigo),var(--indigo-light));
+    background:linear-gradient(135deg,var(--brand),var(--brand-deep));
     color:#fff; border-radius:20px; padding:22px 22px 20px; margin-bottom:18px;
-    box-shadow:0 8px 22px rgba(67,56,202,.22);
+    box-shadow:0 8px 22px rgba(155,149,201,.4);
   }
-  .summary .label{font-size:13px; opacity:.85; margin-bottom:4px;}
+  .summary .label{font-size:13px; opacity:.9; margin-bottom:4px;}
   .summary .total{font-size:34px; font-weight:700; letter-spacing:-.5px;}
   .summary .total span{font-size:18px; font-weight:600; margin-left:2px;}
-  .summary .sub{font-size:13px; opacity:.85; margin-top:8px;}
+  .summary .sub{font-size:13px; opacity:.9; margin-top:8px;}
+  .summary .other{font-size:12.5px; opacity:.85; margin-top:6px;}
 
   .card{
     background:var(--card); border-radius:16px; padding:15px 16px; margin-bottom:11px;
@@ -55,6 +54,7 @@
   .avatar{
     width:44px; height:44px; border-radius:12px; flex:0 0 auto; color:#fff;
     display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px;
+    background-size:cover; background-position:center; overflow:hidden;
   }
   .card .info{flex:1; min-width:0;}
   .card .name{font-size:16px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
@@ -68,56 +68,49 @@
     text-align:center; color:#6b7280; font-size:17px; line-height:1.8;
     height:60dvh; font-weight:600;
   }
-  .empty small{display:block; color:var(--muted); font-weight:400; font-size:14px; margin-top:10px;}
 
-  /* ---- analysis ---- */
   .stat-row{display:flex; gap:11px; margin-bottom:18px;}
   .stat{flex:1; background:#fff; border-radius:16px; padding:16px; box-shadow:0 1px 3px rgba(0,0,0,.05);}
   .stat .k{font-size:12px; color:var(--muted);}
   .stat .v{font-size:23px; font-weight:700; margin-top:5px;}
+  .stat .v small{font-size:13px; font-weight:600; color:#6b7280; display:block; margin-top:3px;}
   .section-title{font-size:14px; font-weight:700; color:#374151; margin:6px 2px 12px;}
+  .note{font-size:12px; color:var(--muted); margin:0 2px 12px;}
   .bar-item{margin-bottom:14px;}
   .bar-head{display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;}
   .bar-head .nm{font-weight:600;}
   .bar-head .vl{color:var(--muted);}
-  .bar-track{height:9px; background:#E9EAF5; border-radius:6px; overflow:hidden;}
-  .bar-fill{height:100%; background:var(--indigo); border-radius:6px;}
+  .bar-track{height:9px; background:#E7E6EF; border-radius:6px; overflow:hidden;}
+  .bar-fill{height:100%; background:var(--brand); border-radius:6px;}
 
-  /* ---- calendar ---- */
   .cal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
   .cal-head .m{font-size:17px; font-weight:700;}
-  .cal-nav{width:34px; height:34px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--indigo); box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .cal-nav{width:34px; height:34px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--brand); box-shadow:0 1px 3px rgba(0,0,0,.06);}
   .cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:4px; background:#fff; border-radius:16px; padding:12px; box-shadow:0 1px 3px rgba(0,0,0,.05);}
   .cal-dow{text-align:center; font-size:11px; color:var(--muted); padding:4px 0;}
   .cal-cell{aspect-ratio:1; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:9px; font-size:13.5px; position:relative;}
-  .cal-cell.today{background:var(--indigo-soft); font-weight:700; color:var(--indigo);}
-  .cal-cell.has::after{content:""; width:5px; height:5px; border-radius:50%; background:var(--indigo); position:absolute; bottom:5px;}
+  .cal-cell.today{background:var(--brand-soft); font-weight:700; color:var(--brand-deep);}
+  .cal-cell.has::after{content:""; width:5px; height:5px; border-radius:50%; background:var(--brand); position:absolute; bottom:5px;}
   .cal-cell.muted{color:#d1d5db;}
   .upcoming{margin-top:20px;}
 
-  /* ---- history ---- */
   .hist-day{font-size:13px; color:var(--muted); margin:18px 2px 9px; font-weight:600;}
   .hist-item{background:#fff; border-radius:14px; padding:13px 15px; margin-bottom:8px; display:flex; align-items:center; gap:12px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
   .hist-item .nm{flex:1; font-weight:600; font-size:15px;}
   .hist-item .am{font-weight:700;}
 
-  /* ---- fab + tabbar ---- */
   .fab{
     position:fixed; right:20px; bottom:calc(var(--safe-bottom) + 84px);
-    width:60px; height:60px; border-radius:50%; background:var(--indigo); color:#fff;
+    width:60px; height:60px; border-radius:50%; background:var(--brand); color:#fff;
     font-size:30px; display:flex; align-items:center; justify-content:center;
-    box-shadow:0 6px 18px rgba(67,56,202,.4); z-index:20;
+    box-shadow:0 6px 18px rgba(155,149,201,.55); z-index:20;
   }
   .fab:active{transform:scale(.94);}
-  .tabbar{
-    display:flex; background:#fff; border-top:1px solid var(--line);
-    padding:8px 0 calc(var(--safe-bottom) + 8px); position:relative; z-index:10;
-  }
+  .tabbar{display:flex; background:#fff; border-top:1px solid var(--line); padding:8px 0 calc(var(--safe-bottom) + 8px); position:relative; z-index:10;}
   .tab{flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--muted); font-size:10.5px;}
   .tab svg{width:23px; height:23px;}
-  .tab.active{color:var(--indigo);}
+  .tab.active{color:var(--brand);}
 
-  /* ---- sheet (add/edit) ---- */
   .overlay{position:fixed; inset:0; background:rgba(0,0,0,.4); opacity:0; pointer-events:none; transition:opacity .25s; z-index:30;}
   .overlay.show{opacity:1; pointer-events:auto;}
   .sheet{
@@ -132,21 +125,29 @@
   .sheet-body{overflow-y:auto; padding:8px 20px 16px;}
   .field{margin-top:18px;}
   .field > label{display:block; font-size:14px; font-weight:700; margin-bottom:9px;}
-  .field input[type=text], .field input[type=url], .field select, .field textarea, .field input[type=date]{
+  .field input[type=text], .field input[type=url], .field select, .field textarea, .field input[type=date], .field input[type=number]{
     width:100%; border:none; border-bottom:1.5px solid var(--line); padding:8px 2px;
     background:transparent; outline:none; color:var(--ink);
   }
   .field select{appearance:none; -webkit-appearance:none;}
   .field textarea{resize:none; min-height:54px; border:1.5px solid var(--line); border-radius:12px; padding:10px;}
-  .price-field{display:flex; align-items:center; gap:14px;}
-  .yen{width:54px; height:48px; border-radius:12px; background:var(--indigo-soft); color:var(--indigo); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700;}
-  .price-field input{flex:1; font-size:22px; border:none; border-bottom:1.5px solid var(--line); padding:8px 2px; outline:none;}
-  .submit{
-    margin:14px 20px calc(var(--safe-bottom) + 14px); padding:17px; border-radius:30px;
-    background:var(--indigo); color:#fff; font-size:17px; font-weight:700; text-align:center;
+  .price-field{display:flex; align-items:center; gap:12px;}
+  .cur-select{
+    width:auto; min-width:78px; height:48px; border-radius:12px; background:var(--brand-soft);
+    color:var(--brand-deep); font-size:16px; font-weight:700; padding:0 8px; border:none;
+    appearance:none; -webkit-appearance:none; text-align:center; text-align-last:center; flex:0 0 auto;
   }
+  .price-field input{flex:1; font-size:22px; border:none; border-bottom:1.5px solid var(--line); padding:8px 2px; outline:none;}
+  .img-btn{
+    display:inline-flex; align-items:center; gap:7px; padding:11px 18px; border-radius:12px;
+    background:var(--brand-soft); color:var(--brand-deep); font-size:15px; font-weight:700;
+  }
+  .img-preview{position:relative; display:inline-block; margin-bottom:10px;}
+  .img-preview img{max-width:160px; max-height:160px; border-radius:14px; display:block; border:1px solid var(--line);}
+  .img-remove{position:absolute; top:-9px; right:-9px; width:26px; height:26px; border-radius:50%; background:#DC2626; color:#fff; font-size:15px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,.25);}
+  .submit{margin:14px 20px 6px; padding:17px; border-radius:30px; background:var(--brand); color:#fff; font-size:17px; font-weight:700; text-align:center;}
   .submit:active{opacity:.85;}
-  .delete-btn{display:block; width:100%; text-align:center; color:#DC2626; font-size:15px; font-weight:600; padding:14px; margin-top:8px;}
+  .delete-btn{display:block; width:100%; text-align:center; color:#DC2626; font-size:15px; font-weight:600; padding:14px; margin-bottom:8px;}
   .menu-item{padding:16px 8px; font-size:16px; border-bottom:1px solid var(--line);}
   .menu-item:last-child{border:none;}
 </style>
@@ -158,16 +159,13 @@
     <h1 id="pageTitle">サブスクリプション</h1>
     <button class="icon-btn" onclick="exportData()">⋯</button>
   </header>
-
   <main>
     <section id="home" class="page active"></section>
     <section id="analysis" class="page"></section>
     <section id="calendar" class="page"></section>
     <section id="history" class="page"></section>
   </main>
-
   <button class="fab" onclick="openSheet('add')">＋</button>
-
   <nav class="tabbar">
     <button class="tab active" data-tab="home" onclick="switchTab('home')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>ホーム</button>
@@ -185,79 +183,113 @@
 
 <script>
 const CYCLES = {
-  weekly:    {label:"毎週",      perYear:52,  addMonths:0, addDays:7},
-  monthly:   {label:"1ヶ月に1回", perYear:12,  addMonths:1, addDays:0},
-  quarterly: {label:"3ヶ月に1回", perYear:4,   addMonths:3, addDays:0},
-  semi:      {label:"6ヶ月に1回", perYear:2,   addMonths:6, addDays:0},
-  yearly:    {label:"1年に1回",   perYear:1,   addMonths:12,addDays:0},
+  weekly:    {label:"毎週",      perYear:52, addMonths:0, addDays:7},
+  monthly:   {label:"1ヶ月に1回", perYear:12, addMonths:1, addDays:0},
+  quarterly: {label:"3ヶ月に1回", perYear:4,  addMonths:3, addDays:0},
+  semi:      {label:"6ヶ月に1回", perYear:2,  addMonths:6, addDays:0},
+  yearly:    {label:"1年に1回",   perYear:1,  addMonths:12,addDays:0},
 };
-const COLORS = ["#4338CA","#0EA5E9","#F59E0B","#EC4899","#10B981","#8B5CF6","#EF4444","#14B8A6"];
+const CURRENCIES = {
+  JPY:{symbol:"¥",   dec:0, label:"日本円 (JPY)"},
+  USD:{symbol:"$",   dec:2, label:"米ドル (USD)"},
+  EUR:{symbol:"€",   dec:2, label:"ユーロ (EUR)"},
+  GBP:{symbol:"£",   dec:2, label:"英ポンド (GBP)"},
+  KRW:{symbol:"₩",   dec:0, label:"韓国ウォン (KRW)"},
+  CNY:{symbol:"CN¥", dec:2, label:"人民元 (CNY)"},
+  AUD:{symbol:"A$",  dec:2, label:"豪ドル (AUD)"},
+  TWD:{symbol:"NT$", dec:0, label:"台湾ドル (TWD)"},
+};
+const PAYMENTS = ["クレジットカード","デビットカード","PayPay","楽天ペイ","d払い","au PAY","Apple Pay","Google Pay","キャリア決済","銀行口座振替","App Store","Google Play","Amazon","PayPal","その他"];
+const COLORS = ["#9B95C9","#7C9CBF","#A98FC4","#8AB0A8","#C49AB0","#9A8FB8","#7FA0C4","#B0A0CC"];
 const STORE_KEY = "subsc.v1";
 
 let subs = load();
 let calMonth = startOfMonth(new Date());
+let formImage = null;
 
 function load(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }catch(e){ return []; } }
-function save(){ localStorage.setItem(STORE_KEY, JSON.stringify(subs)); }
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(subs)); }
+  catch(e){ alert("保存できませんでした。画像が多すぎる可能性があります。設定から書き出してバックアップを取ってください。"); }
+}
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
+function cur(s){ return s.currency && CURRENCIES[s.currency] ? s.currency : "JPY"; }
+function format(amount, code){
+  const c = CURRENCIES[code] || CURRENCIES.JPY;
+  let n = c.dec ? amount.toFixed(c.dec) : Math.round(amount).toString();
+  const parts = n.split(".");
+  parts[0] = Number(parts[0]).toLocaleString("ja-JP");
+  return c.symbol + parts.join(".");
+}
 function monthlyAmount(s){ return s.fee * CYCLES[s.cycle].perYear / 12; }
-function yen(n){ return "¥" + Math.round(n).toLocaleString("ja-JP"); }
+function monthlyByCurrency(){
+  const g = {};
+  for(const s of subs){ const c = cur(s); g[c] = (g[c]||0) + monthlyAmount(s); }
+  return g;
+}
+function primaryCurrency(){
+  const cnt = {};
+  for(const s of subs){ const c = cur(s); cnt[c] = (cnt[c]||0)+1; }
+  let best = "JPY", n = -1;
+  for(const c in cnt){ if(cnt[c] > n){ n = cnt[c]; best = c; } }
+  return best;
+}
 function colorFor(s){ return COLORS[ (s.name.charCodeAt(0)||0) % COLORS.length ]; }
 function startOfMonth(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
 function ymd(d){ return d.getFullYear()+"年"+(d.getMonth()+1)+"月"+d.getDate()+"日"; }
 function sameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function avatarHTML(s, sz){
+  const size = sz||44, fs = Math.round(size*0.41);
+  if(s.image) return `<div class="avatar" style="width:${size}px;height:${size}px;background-image:url('${s.image}')"></div>`;
+  return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${fs}px;background:${colorFor(s)}">${esc(s.name.charAt(0))}</div>`;
+}
 
 function advance(date, cycle){
   const c = CYCLES[cycle], d = new Date(date);
-  if(c.addDays) d.setDate(d.getDate()+c.addDays);
-  else d.setMonth(d.getMonth()+c.addMonths);
+  if(c.addDays) d.setDate(d.getDate()+c.addDays); else d.setMonth(d.getMonth()+c.addMonths);
   return d;
 }
 function nextPayment(s){
   const today = new Date(); today.setHours(0,0,0,0);
   let d = new Date(s.firstDate); d.setHours(0,0,0,0);
-  let guard=0;
-  while(d < today && guard++ < 1000) d = advance(d, s.cycle);
+  let g=0; while(d < today && g++ < 2000) d = advance(d, s.cycle);
   return d;
 }
 function occurrencesBetween(s, from, to){
   let d = new Date(s.firstDate); d.setHours(0,0,0,0);
-  const out=[], guard=2000; let i=0;
-  while(d < from && i++ < guard) d = advance(d, s.cycle);
-  i=0;
-  while(d <= to && i++ < guard){ out.push(new Date(d)); d = advance(d, s.cycle); }
+  const out=[]; let i=0;
+  while(d < from && i++ < 4000) d = advance(d, s.cycle);
+  i=0; while(d <= to && i++ < 4000){ out.push(new Date(d)); d = advance(d, s.cycle); }
   return out;
 }
 
-/* ---------- rendering ---------- */
 function renderAll(){ renderHome(); renderAnalysis(); renderCalendar(); renderHistory(); }
 
 function renderHome(){
   const el = document.getElementById("home");
-  if(subs.length===0){
-    el.innerHTML = `<div class="empty">右下のプラスボタンから<br>サブスクリプションを追加できます</div>`;
-    return;
-  }
-  const totalM = subs.reduce((a,s)=>a+monthlyAmount(s),0);
+  if(subs.length===0){ el.innerHTML = `<div class="empty">右下のプラスボタンから<br>サブスクリプションを追加できます</div>`; return; }
+  const g = monthlyByCurrency(), p = primaryCurrency();
+  const others = Object.keys(g).filter(c=>c!==p);
   const sorted = [...subs].sort((a,b)=> nextPayment(a)-nextPayment(b));
   let html = `
     <div class="summary">
-      <div class="label">今月の合計</div>
-      <div class="total">${yen(totalM)}<span>/月</span></div>
-      <div class="sub">年間 ${yen(totalM*12)} ・ ${subs.length}件のサブスク</div>
+      <div class="label">毎月の合計</div>
+      <div class="total">${format(g[p]||0,p)}<span>/月</span></div>
+      <div class="sub">年間 ${format((g[p]||0)*12,p)} ・ ${subs.length}件のサブスク</div>
+      ${others.length? `<div class="other">${others.map(c=>format(g[c],c)+"/月").join(" ・ ")}</div>`:""}
     </div>`;
   for(const s of sorted){
     const np = nextPayment(s);
     html += `
       <div class="card" onclick="openSheet('edit','${s.id}')">
-        <div class="avatar" style="background:${colorFor(s)}">${s.name.charAt(0)}</div>
+        ${avatarHTML(s)}
         <div class="info">
           <div class="name">${esc(s.name)}</div>
           <div class="meta">次回 ${ymd(np)}${s.category? " ・ "+esc(s.category):""}</div>
         </div>
         <div class="price">
-          <div class="amt">${yen(s.fee)}</div>
+          <div class="amt">${format(s.fee, cur(s))}</div>
           <div class="cyc">${CYCLES[s.cycle].label}</div>
         </div>
       </div>`;
@@ -268,21 +300,26 @@ function renderHome(){
 function renderAnalysis(){
   const el = document.getElementById("analysis");
   if(subs.length===0){ el.innerHTML = `<div class="empty">データがありません</div>`; return; }
-  const totalM = subs.reduce((a,s)=>a+monthlyAmount(s),0);
+  const g = monthlyByCurrency(), p = primaryCurrency();
+  const codes = Object.keys(g);
+  const monthlyV = `${format(g[p],p)}` + (codes.length>1? codes.filter(c=>c!==p).map(c=>`<small>${format(g[c],c)}</small>`).join(""):"");
+  const yearlyV  = `${format(g[p]*12,p)}` + (codes.length>1? codes.filter(c=>c!==p).map(c=>`<small>${format(g[c]*12,c)}</small>`).join(""):"");
+  // category breakdown, primary currency only
   const byCat = {};
-  for(const s of subs){ const c = s.category||"未分類"; byCat[c]=(byCat[c]||0)+monthlyAmount(s); }
+  for(const s of subs){ if(cur(s)!==p) continue; const c = s.category||"未分類"; byCat[c]=(byCat[c]||0)+monthlyAmount(s); }
   const cats = Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
-  const max = Math.max(...cats.map(c=>c[1]));
+  const totalP = g[p]||1, max = Math.max(...cats.map(c=>c[1]), 1);
   let html = `
     <div class="stat-row">
-      <div class="stat"><div class="k">月額合計</div><div class="v">${yen(totalM)}</div></div>
-      <div class="stat"><div class="k">年額合計</div><div class="v">${yen(totalM*12)}</div></div>
+      <div class="stat"><div class="k">月額合計</div><div class="v">${monthlyV}</div></div>
+      <div class="stat"><div class="k">年額合計</div><div class="v">${yearlyV}</div></div>
     </div>
-    <div class="section-title">カテゴリー別（月額）</div>`;
+    <div class="section-title">カテゴリー別（月額・${CURRENCIES[p].label}）</div>`;
+  if(codes.length>1) html += `<div class="note">他通貨のサブスクはカテゴリー集計から除いています</div>`;
   for(const [c,v] of cats){
     html += `
       <div class="bar-item">
-        <div class="bar-head"><span class="nm">${esc(c)}</span><span class="vl">${yen(v)}（${Math.round(v/totalM*100)}%）</span></div>
+        <div class="bar-head"><span class="nm">${esc(c)}</span><span class="vl">${format(v,p)}（${Math.round(v/totalP*100)}%）</span></div>
         <div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%"></div></div>
       </div>`;
   }
@@ -292,35 +329,24 @@ function renderAnalysis(){
 function renderCalendar(){
   const el = document.getElementById("calendar");
   const y = calMonth.getFullYear(), m = calMonth.getMonth();
-  const first = new Date(y,m,1), startDow = first.getDay();
-  const days = new Date(y,m+1,0).getDate();
+  const startDow = new Date(y,m,1).getDay(), days = new Date(y,m+1,0).getDate();
   const today = new Date();
   const payDays = {};
-  for(const s of subs){
-    const np = nextPayment(s);
-    // gather all occurrences this month
-    occurrencesBetween(s, new Date(y,m,1), new Date(y,m,days)).forEach(d=>{
-      (payDays[d.getDate()] = payDays[d.getDate()]||[]).push(s);
-    });
-  }
+  for(const s of subs) occurrencesBetween(s, new Date(y,m,1), new Date(y,m,days)).forEach(d=>{ (payDays[d.getDate()]=payDays[d.getDate()]||[]).push(s); });
   const dow = ["日","月","火","水","木","金","土"];
-  let cells = "";
-  dow.forEach(d=> cells += `<div class="cal-dow">${d}</div>`);
+  let cells = ""; dow.forEach(d=> cells += `<div class="cal-dow">${d}</div>`);
   for(let i=0;i<startDow;i++) cells += `<div class="cal-cell muted"></div>`;
   for(let d=1; d<=days; d++){
-    const isToday = sameDay(new Date(y,m,d), today);
-    const has = payDays[d];
+    const isToday = sameDay(new Date(y,m,d), today), has = payDays[d];
     cells += `<div class="cal-cell ${isToday?'today':''} ${has?'has':''}">${d}</div>`;
   }
-  // upcoming list (next 45 days)
   const from = new Date(); from.setHours(0,0,0,0);
   const to = new Date(from); to.setDate(to.getDate()+45);
-  let up = [];
-  for(const s of subs) occurrencesBetween(s, from, to).forEach(d=> up.push({s,d}));
+  let up = []; for(const s of subs) occurrencesBetween(s, from, to).forEach(d=> up.push({s,d}));
   up.sort((a,b)=>a.d-b.d);
   let upHtml = "";
   for(const {s,d} of up.slice(0,12)){
-    upHtml += `<div class="hist-item"><div class="avatar" style="width:36px;height:36px;font-size:15px;background:${colorFor(s)}">${s.name.charAt(0)}</div><div class="nm">${esc(s.name)}<div style="font-size:12px;color:var(--muted);font-weight:400">${ymd(d)}</div></div><div class="am">${yen(s.fee)}</div></div>`;
+    upHtml += `<div class="hist-item">${avatarHTML(s,36)}<div class="nm">${esc(s.name)}<div style="font-size:12px;color:var(--muted);font-weight:400">${ymd(d)}</div></div><div class="am">${format(s.fee,cur(s))}</div></div>`;
   }
   el.innerHTML = `
     <div class="cal-head">
@@ -329,30 +355,26 @@ function renderCalendar(){
       <button class="cal-nav" onclick="calMonth=new Date(${y},${m+1},1);renderCalendar()">›</button>
     </div>
     <div class="cal-grid">${cells}</div>
-    <div class="upcoming">
-      <div class="section-title">今後の支払い</div>
-      ${upHtml || '<div style="color:var(--muted);font-size:14px;padding:8px 2px">予定はありません</div>'}
-    </div>`;
+    <div class="upcoming"><div class="section-title">今後の支払い</div>
+      ${upHtml || '<div style="color:var(--muted);font-size:14px;padding:8px 2px">予定はありません</div>'}</div>`;
 }
 
 function renderHistory(){
   const el = document.getElementById("history");
   const today = new Date(); today.setHours(0,0,0,0);
   const from = new Date(today); from.setMonth(from.getMonth()-12);
-  let items = [];
-  for(const s of subs) occurrencesBetween(s, from, today).forEach(d=> items.push({s,d}));
+  let items = []; for(const s of subs) occurrencesBetween(s, from, today).forEach(d=> items.push({s,d}));
   items.sort((a,b)=> b.d-a.d);
   if(items.length===0){ el.innerHTML = `<div class="empty">支払い履歴はまだありません</div>`; return; }
   let html = "", curKey="";
   for(const {s,d} of items){
     const key = d.getFullYear()+"年"+(d.getMonth()+1)+"月";
     if(key!==curKey){ html += `<div class="hist-day">${key}</div>`; curKey=key; }
-    html += `<div class="hist-item"><div class="avatar" style="width:36px;height:36px;font-size:15px;background:${colorFor(s)}">${s.name.charAt(0)}</div><div class="nm">${esc(s.name)}<div style="font-size:12px;color:var(--muted);font-weight:400">${d.getMonth()+1}月${d.getDate()}日</div></div><div class="am">${yen(s.fee)}</div></div>`;
+    html += `<div class="hist-item">${avatarHTML(s,36)}<div class="nm">${esc(s.name)}<div style="font-size:12px;color:var(--muted);font-weight:400">${d.getMonth()+1}月${d.getDate()}日</div></div><div class="am">${format(s.fee,cur(s))}</div></div>`;
   }
   el.innerHTML = html;
 }
 
-/* ---------- tabs ---------- */
 const TITLES = {home:"サブスクリプション",analysis:"分析",calendar:"カレンダー",history:"支払い履歴"};
 function switchTab(name){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
@@ -362,11 +384,15 @@ function switchTab(name){
   document.querySelector("main").scrollTop = 0;
 }
 
-/* ---------- sheet ---------- */
 function openSheet(mode, id){
   const sheet = document.getElementById("sheet");
   if(mode==="settings"){ sheet.innerHTML = settingsHTML(); }
-  else { sheet.innerHTML = formHTML(mode, id); }
+  else {
+    const s = mode==="edit" ? subs.find(x=>x.id===id) : null;
+    formImage = s && s.image ? s.image : null;
+    sheet.innerHTML = formHTML(mode, s);
+    renderImgPreview();
+  }
   document.getElementById("overlay").classList.add("show");
   sheet.classList.add("show");
 }
@@ -375,16 +401,20 @@ function closeSheet(){
   document.getElementById("sheet").classList.remove("show");
 }
 
-function formHTML(mode, id){
-  const s = mode==="edit" ? subs.find(x=>x.id===id) : null;
+function formHTML(mode, s){
   const today = new Date().toISOString().slice(0,10);
   const cycleOpts = Object.entries(CYCLES).map(([k,v])=>
-    `<option value="${k}" ${s&&s.cycle===k?"selected":(!s&&k==="monthly"?"selected":"")}>${v.label}</option>`).join("");
+    `<option value="${k}" ${s? (s.cycle===k?"selected":"") : (k==="monthly"?"selected":"")}>${v.label}</option>`).join("");
+  const curOpts = Object.entries(CURRENCIES).map(([k,v])=>
+    `<option value="${k}" ${ (s? cur(s):"JPY")===k ?"selected":""}>${v.symbol} ${k}</option>`).join("");
+  const isPreset = s && PAYMENTS.includes(s.payment);
+  const paySel = s ? (isPreset ? s.payment : (s.payment? "その他":"")) : "";
+  const payOther = s && !isPreset ? (s.payment||"") : "";
+  const payOpts = `<option value="">選択しない</option>` + PAYMENTS.map(p=>`<option value="${p}" ${paySel===p?"selected":""}>${p}</option>`).join("");
   return `
     <div class="sheet-head">
       <button class="x" onclick="closeSheet()">✕</button>
-      <span class="t">${s?"編集":"追加"}</span>
-      <span style="width:30px"></span>
+      <span class="t">${s?"編集":"追加"}</span><span style="width:30px"></span>
     </div>
     <div class="sheet-body">
       <div class="field"><label>サービス名</label>
@@ -392,16 +422,25 @@ function formHTML(mode, id){
       <div class="field"><label>支払い周期</label>
         <select id="f-cycle">${cycleOpts}</select></div>
       <div class="field"><label>料金</label>
-        <div class="price-field"><div class="yen">¥</div>
-          <input type="number" inputmode="numeric" id="f-fee" placeholder="500" value="${s?s.fee:""}"></div></div>
+        <div class="price-field">
+          <select class="cur-select" id="f-currency">${curOpts}</select>
+          <input type="number" inputmode="decimal" id="f-fee" placeholder="500" value="${s?s.fee:""}"></div></div>
       <div class="field"><label>初回支払い日</label>
         <input type="date" id="f-date" value="${s?s.firstDate:today}"></div>
       <div class="field"><label>カテゴリー</label>
         <input type="text" id="f-cat" placeholder="音楽 / 動画 / 仕事など" value="${s?esc(s.category||""):""}"></div>
       <div class="field"><label>支払い方法</label>
-        <input type="text" id="f-pay" placeholder="クレジットカードなど" value="${s?esc(s.payment||""):""}"></div>
+        <select id="f-pay" onchange="onPaymentChange()">${payOpts}</select>
+        <div id="f-pay-other-wrap" style="display:${paySel==='その他'?'block':'none'};margin-top:12px">
+          <input type="text" id="f-pay-other" placeholder="支払い方法を入力" value="${esc(payOther)}"></div>
+      </div>
       <div class="field"><label>URL</label>
         <input type="url" id="f-url" placeholder="https://" value="${s?esc(s.url||""):""}"></div>
+      <div class="field"><label>画像</label>
+        <div id="imgPreviewWrap"></div>
+        <input type="file" id="f-image" accept="image/*" style="display:none" onchange="pickImage(event)">
+        <button type="button" class="img-btn" onclick="document.getElementById('f-image').click()">🖼 画像を選択</button>
+      </div>
       <div class="field"><label>メモ</label>
         <textarea id="f-memo" placeholder="解約方法など">${s?esc(s.memo||""):""}</textarea></div>
     </div>
@@ -410,19 +449,52 @@ function formHTML(mode, id){
   `;
 }
 
+function onPaymentChange(){
+  const v = document.getElementById("f-pay").value;
+  document.getElementById("f-pay-other-wrap").style.display = v==="その他" ? "block" : "none";
+}
+
+function pickImage(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 700; let w = img.width, h = img.height;
+      if(w>h && w>max){ h = h*max/w; w = max; } else if(h>max){ w = w*max/h; h = max; }
+      const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(img,0,0,w,h);
+      formImage = cv.toDataURL("image/jpeg", 0.7);
+      renderImgPreview();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function renderImgPreview(){
+  const wrap = document.getElementById("imgPreviewWrap"); if(!wrap) return;
+  wrap.innerHTML = formImage
+    ? `<div class="img-preview"><img src="${formImage}"><div class="img-remove" onclick="formImage=null;renderImgPreview()">✕</div></div>`
+    : "";
+}
+
 function saveForm(id){
   const name = document.getElementById("f-name").value.trim();
   const fee = parseFloat(document.getElementById("f-fee").value);
   if(!name){ alert("サービス名を入力してください"); return; }
   if(isNaN(fee) || fee<0){ alert("料金を入力してください"); return; }
+  const paySel = document.getElementById("f-pay").value;
+  const payment = paySel==="その他" ? document.getElementById("f-pay-other").value.trim() : paySel;
   const data = {
     name, fee,
+    currency: document.getElementById("f-currency").value,
     cycle: document.getElementById("f-cycle").value,
     firstDate: document.getElementById("f-date").value,
     category: document.getElementById("f-cat").value.trim(),
-    payment: document.getElementById("f-pay").value.trim(),
+    payment,
     url: document.getElementById("f-url").value.trim(),
     memo: document.getElementById("f-memo").value.trim(),
+    image: formImage || "",
   };
   if(id){ const i=subs.findIndex(x=>x.id===id); subs[i]={...subs[i],...data}; }
   else { subs.push({id:uid(),...data}); }
@@ -431,8 +503,7 @@ function saveForm(id){
 
 function removeSub(id){
   if(!confirm("このサブスクを削除しますか？")) return;
-  subs = subs.filter(x=>x.id!==id);
-  save(); renderAll(); closeSheet();
+  subs = subs.filter(x=>x.id!==id); save(); renderAll(); closeSheet();
 }
 
 function settingsHTML(){
@@ -449,12 +520,10 @@ function settingsHTML(){
       <p style="color:var(--muted);font-size:12.5px;margin-top:20px;line-height:1.7">データはこの端末内にのみ保存されます。機種変更や念のためのバックアップには「書き出す」を使ってください。</p>
     </div>`;
 }
-
 function exportData(){
   const blob = new Blob([JSON.stringify(subs,null,2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = "subsc-backup.json"; a.click();
+  const a = document.createElement("a"); a.href = url; a.download = "subsc-backup.json"; a.click();
   URL.revokeObjectURL(url);
 }
 function importData(e){
@@ -463,8 +532,7 @@ function importData(e){
   r.onload = ()=>{ try{ const d=JSON.parse(r.result); if(Array.isArray(d)){ subs=d; save(); renderAll(); closeSheet(); alert("読み込みました"); } }catch(err){ alert("ファイルを読めませんでした"); } };
   r.readAsText(file);
 }
-
-function esc(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
 renderAll();
 </script>
